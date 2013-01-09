@@ -1,4 +1,4 @@
 eventPackagePluginStart = {
   compile()
-  ant.jar ( destfile : 'lib/livedoc.jar' , basedir : 'target/classes', includes:"com/evolution/**")
+  ant.jar ( destfile : 'lib/livedoc.jar' , basedir : 'target/classes', includes:"com/dmitart/**")
 }
