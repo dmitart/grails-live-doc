@@ -1,0 +1,75 @@
+<!DOCTYPE HTML PUBLIC "-//W3C//DTD HTML 4.01 Transitional//EN" "http://www.w3.org/TR/html4/loose.dtd">
+<%
+def classes
+
+add = {def me, def classobj, def array, def uptothis ->
+def current = array[0]
+def location = uptothis + current
+def next = array.size() > 1 ? array[1..-1] :null
+def existingroot = me.kids.find { it.key == current }
+if (!existingroot) {
+existingroot = [key:current, kids:[], add:add, classobj:(next ? null : classobj), location: location]
+me.kids << existingroot
+}
+if (next) {
+existingroot.add(existingroot, classobj, next, location)
+}
+}
+
+def tree = [key:"", kids:[], add:add, classobj:null, location:[]]
+
+rootDoc.classes().each {
+  if (!it.annotations().find { it.name().endsWith('SkipLiveDoc') }) {
+    tree.add(tree, it, it.qualifiedTypeName().split("\\."), [])
+  }
+}
+
+printTree = {def subtree->
+  def result = ""
+  if (subtree.classobj) {
+    result = "<li><a href='${subtree.classobj.getFullPathName()}.html'>${com.dmitart.livedoc.Util.nicefy(subtree.key)}</a></li><ul>"
+  } else if (subtree.key) {
+    result = "<li><a href='${subtree.location.join('/')}/package-summary.html'>${subtree.key}</a></li><ul>"
+  }
+  subtree.kids.each {
+    result += printTree(it)
+    }
+    result += "</ul>"
+    return result
+  }
+  def treetext = printTree(tree)
+  %>
+  <html>
+  <head>
+    <title>Documentation</title>
+    <META NAME="keywords" CONTENT="Overview">
+    <LINK REL ="stylesheet" TYPE="text/css" HREF="stylesheet.css" TITLE="Style">
+    <link href="groovy.ico" type="image/x-icon" rel="icon">
+  </head>
+  <body BGCOLOR="white">
+
+  <hr>
+
+  <!-- ========= START OF TOP NAVBAR ======= -->
+  <a name="navbar_top"><!-- --></a>
+  <table summary="" width="100%" border="0" cellpadding="1" cellspacing="0">
+    <tbody><tr>
+      <td colspan="2" class="NavBarCell1" bgcolor="#eeeeff">
+        <a name="navbar_top_firstrow"><!-- --></a>
+        <table summary="" border="0" cellpadding="0" cellspacing="3">
+          <tbody><tr valign="top" align="center">
+            <td class="NavBarCell1Rev" bgcolor="#ffffff"> &nbsp;<font class="NavBarFont1Rev"><b>Overview</b></font>&nbsp;</td>
+          </tr>
+          </tbody></table>
+      </td>
+    </tr>
+    </tbody></table>
+  <!-- ========= END OF TOP NAVBAR ========= -->
+
+<h1>Table of content</h1>
+  <ul>${treetext}</ul>
+
+  <hr>
+
+  </body>
+  </html>

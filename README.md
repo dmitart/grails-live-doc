@@ -1,3 +1,2 @@
 grails-live-doc
 ===============
-test
