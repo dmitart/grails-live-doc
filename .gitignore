@@ -28,9 +28,6 @@
 # project release file
 /*.war
 
-# plugin release file
-/*.zip
-
 # older plugin install locations
 /plugins
 /web-app/plugins
